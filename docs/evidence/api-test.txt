@@ -1,0 +1,88 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> taskflow-backend@1.0.0 test
+> node --import tsx --test --test-concurrency=1 test/*.test.ts
+
+{"time":"2026-10-21T06:12:26.475Z","level":"warn","event":"http_request","requestId":"81d3b27b-560e-4f3a-9a66-4bc505f852c1","method":"GET","route":"unmatched","status":401}
+{"time":"2026-10-21T06:12:26.500Z","level":"warn","event":"http_request","requestId":"9c4cf881-755b-4ec6-912a-07f0c6550122","method":"POST","route":"/api/auth/register","status":400}
+{"time":"2026-10-21T06:12:26.973Z","level":"info","event":"http_request","requestId":"078c07ea-3f2a-418e-afd5-018fad51fcad","method":"POST","route":"/api/auth/register","status":201}
+{"time":"2026-10-21T06:12:27.290Z","level":"info","event":"http_request","requestId":"ef136882-af00-421f-bb45-8b398f651a13","method":"POST","route":"/api/auth/register","status":201}
+{"time":"2026-10-21T06:12:27.605Z","level":"info","event":"http_request","requestId":"669199cb-80bb-4cbf-80ea-1e9d451ebd57","method":"POST","route":"/api/auth/register","status":201}
+{"time":"2026-10-21T06:12:27.919Z","level":"info","event":"http_request","requestId":"668d60ab-965d-498d-b73a-5ce528a3a735","method":"POST","route":"/api/auth/register","status":201}
+{"time":"2026-10-21T06:12:28.242Z","level":"info","event":"http_request","requestId":"17c55383-e100-4278-a669-0f214d00e5f8","method":"POST","route":"/api/auth/login","status":200}
+{"time":"2026-10-21T06:12:28.563Z","level":"warn","event":"http_request","requestId":"28c2de8f-5c32-4abb-9ba6-60d26861778c","method":"POST","route":"/api/auth/login","status":401}
+▶ Authentication, project permissions, CRUD, Kanban, filters and persistence
+  ✔ Register, login, cookie flags and generic credential errors (2108.746549ms)
+{"time":"2026-10-21T06:12:28.569Z","level":"warn","event":"http_request","requestId":"55167ab1-90c1-4f3a-9692-d4f6676d8bd7","method":"POST","route":"unmatched","status":403}
+{"time":"2026-10-21T06:12:28.581Z","level":"warn","event":"http_request","requestId":"7699934e-7cc9-4208-bf1b-fbfff28d52c6","method":"POST","route":"unmatched","status":403}
+{"time":"2026-10-21T06:12:28.585Z","level":"warn","event":"http_request","requestId":"ed2f544a-2bf1-4b59-b245-aae7b1a5adad","method":"POST","route":"unmatched","status":415}
+  ✔ Origin and CSRF protection reject writes (20.355498ms)
+{"time":"2026-10-21T06:12:28.610Z","level":"info","event":"http_request","requestId":"dc163f4b-faf8-4695-93b9-7d2dbf05996a","method":"POST","route":"/api/projects","status":201}
+{"time":"2026-10-21T06:12:28.630Z","level":"info","event":"http_request","requestId":"3e0b97f3-d86a-4666-a0ac-14fa548a1a30","method":"POST","route":"/api/projects/:id/members","status":201}
+{"time":"2026-10-21T06:12:28.645Z","level":"info","event":"http_request","requestId":"4f777b0b-77e3-48bc-b520-371921673200","method":"POST","route":"/api/projects/:id/members","status":201}
+{"time":"2026-10-21T06:12:28.651Z","level":"warn","event":"http_request","requestId":"22862dc1-8a1a-4c3d-81ac-5a8e1fce1521","method":"GET","route":"/api/projects/:id","status":404}
+{"time":"2026-10-21T06:12:28.658Z","level":"warn","event":"http_request","requestId":"f2ba7926-5e26-4fc5-95f7-e86baee9975a","method":"POST","route":"/api/projects/:id/tasks","status":403}
+{"time":"2026-10-21T06:12:28.665Z","level":"warn","event":"http_request","requestId":"057442df-9081-4e51-9c3b-ecbfcd0ba046","method":"POST","route":"/api/projects/:id/members","status":403}
+{"time":"2026-10-21T06:12:28.674Z","level":"warn","event":"http_request","requestId":"a83da756-dbf1-448c-b9a5-18d9793dd442","method":"DELETE","route":"/api/projects/:id/members/:userId","status":403}
+  ✔ Project membership enforces viewer, outsider and owner restrictions (91.579616ms)
+{"time":"2026-10-21T06:12:28.686Z","level":"warn","event":"http_request","requestId":"83add1b9-db4a-431e-8e5f-b35a99474989","method":"POST","route":"/api/projects/:id/tasks","status":400}
+{"time":"2026-10-21T06:12:28.696Z","level":"info","event":"http_request","requestId":"3cf3fa44-0a49-4d60-9d44-065ceb4b7449","method":"POST","route":"/api/projects/:id/labels","status":201}
+(node:84) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{"time":"2026-10-21T06:12:28.731Z","level":"info","event":"http_request","requestId":"4c9eccb7-2878-45be-9693-ebb97a92d0f1","method":"POST","route":"/api/projects/:id/tasks","status":201}
+{"time":"2026-10-21T06:12:28.754Z","level":"info","event":"http_request","requestId":"a6dc6050-79e6-4591-9e97-c1f5473a42a0","method":"PATCH","route":"/api/tasks/:id","status":200}
+{"time":"2026-10-21T06:12:28.764Z","level":"warn","event":"http_request","requestId":"14304f3d-cc07-458d-ae69-96ab73081e26","method":"GET","route":"/api/tasks/:id","status":404}
+{"time":"2026-10-21T06:12:28.772Z","level":"warn","event":"http_request","requestId":"357019e6-5d35-4b5e-af0c-452eb296a9b5","method":"PATCH","route":"/api/tasks/:id","status":404}
+{"time":"2026-10-21T06:12:28.783Z","level":"warn","event":"http_request","requestId":"1a017d6b-5765-496d-be8a-4e44e8a7f02f","method":"DELETE","route":"/api/tasks/:id","status":403}
+{"time":"2026-10-21T06:12:28.809Z","level":"info","event":"http_request","requestId":"3251c307-1d02-4aeb-b5ee-d24745caee7e","method":"GET","route":"/api/tasks","status":200}
+{"time":"2026-10-21T06:12:28.815Z","level":"warn","event":"http_request","requestId":"7fb68914-cadd-4ef7-91db-3036ed3bf8a7","method":"GET","route":"/api/tasks","status":400}
+{"time":"2026-10-21T06:12:28.818Z","level":"warn","event":"http_request","requestId":"bf7542fa-984e-4d43-9ccb-068ac5ba95ac","method":"GET","route":"/api/tasks/:id","status":400}
+{"time":"2026-10-21T06:12:28.832Z","level":"info","event":"http_request","requestId":"defcd39a-7924-45a6-9dfe-2b591d59dec4","method":"GET","route":"/api/tasks","status":200}
+  ✔ CRUD validates relations, dates and labels and stores Kanban status (154.826383ms)
+{"time":"2026-10-21T06:12:28.849Z","level":"info","event":"http_request","requestId":"bba2dff5-df35-44e8-b631-fa7a275314b1","method":"POST","route":"/api/tasks/:id/comments","status":201}
+{"time":"2026-10-21T06:12:28.860Z","level":"info","event":"http_request","requestId":"82d921f2-aab6-4de7-b227-a17775643dff","method":"POST","route":"/api/tasks/:id/checklist","status":201}
+{"time":"2026-10-21T06:12:28.877Z","level":"info","event":"http_request","requestId":"b0d49601-3537-414c-8851-b8469bc86268","method":"PATCH","route":"/api/tasks/:id/checklist/:itemId","status":200}
+{"time":"2026-10-21T06:12:28.885Z","level":"warn","event":"http_request","requestId":"f1051e56-3b9d-4cd6-8b9b-86b7bef2e7ac","method":"POST","route":"/api/tasks/:id/comments","status":403}
+{"time":"2026-10-21T06:12:28.908Z","level":"info","event":"http_request","requestId":"b7c41950-f595-4dc9-a872-8b3ad7623682","method":"GET","route":"/api/tasks/:id","status":200}
+{"time":"2026-10-21T06:12:28.915Z","level":"warn","event":"http_request","requestId":"b6191a87-c571-4299-aa9d-02497ca263af","method":"PATCH","route":"/api/tasks/:id/checklist/:itemId","status":404}
+  ✔ Comments, checklist, activity and resource ID isolation (82.965063ms)
+{"time":"2026-10-21T06:12:28.941Z","level":"info","event":"http_request","requestId":"98a8fbd8-6ab7-4648-a476-7f29c54223f1","method":"GET","route":"/api/dashboard","status":200}
+{"time":"2026-10-21T06:12:28.946Z","level":"warn","event":"http_request","requestId":"1374ee04-f71a-4991-b2ed-fca6bdea4ce6","method":"GET","route":"/api/admin/users","status":403}
+{"time":"2026-10-21T06:12:28.957Z","level":"info","event":"http_request","requestId":"72c9b2a1-274e-4472-8cae-6b5de6ed2051","method":"PATCH","route":"/api/projects/:id","status":200}
+{"time":"2026-10-21T06:12:28.966Z","level":"warn","event":"http_request","requestId":"a0764e5c-b8ed-4fc0-93f0-9da3b83f21c5","method":"PATCH","route":"/api/tasks/:id","status":409}
+{"time":"2026-10-21T06:12:28.978Z","level":"info","event":"http_request","requestId":"52a91f54-31ba-4417-8135-35e5656e645b","method":"GET","route":"/api/tasks","status":200}
+{"time":"2026-10-21T06:12:28.990Z","level":"info","event":"http_request","requestId":"fc603c0f-fcb0-4ef1-b087-eba1fcbf083e","method":"PATCH","route":"/api/projects/:id","status":200}
+  ✔ Dashboard, admin authorization, archive and restore (81.832195ms)
+{"time":"2026-10-21T06:12:29.012Z","level":"info","event":"http_request","requestId":"a7c8b207-7824-4a4a-ab26-cff19d8242be","method":"DELETE","route":"/api/projects/:id/members/:userId","status":204}
+{"time":"2026-10-21T06:12:29.019Z","level":"warn","event":"http_request","requestId":"15c35ff8-1585-4a0f-ba37-96763c5b30b0","method":"GET","route":"/api/tasks/:id","status":404}
+  ✔ Removing a member removes access and clears assignment (26.338705ms)
+{"time":"2026-10-21T06:12:29.031Z","level":"info","event":"http_request","requestId":"5d37aeba-8dc2-4d8d-add8-a2e98cbb4d65","method":"GET","route":"/api/admin/users","status":200}
+{"time":"2026-10-21T06:12:29.037Z","level":"warn","event":"http_request","requestId":"ceeabcdb-bee8-4363-9684-6823f112210b","method":"PATCH","route":"/api/admin/users/:id","status":400}
+{"time":"2026-10-21T06:12:29.044Z","level":"info","event":"http_request","requestId":"97cbda59-331a-4b63-8426-1c6de6689422","method":"PATCH","route":"/api/admin/users/:id","status":200}
+{"time":"2026-10-21T06:12:29.047Z","level":"warn","event":"http_request","requestId":"e5afd051-703b-484c-a972-41645c6ff1a1","method":"GET","route":"unmatched","status":401}
+{"time":"2026-10-21T06:12:29.054Z","level":"info","event":"http_request","requestId":"54cc1582-7b6e-47bc-b030-1a5ff3830ce4","method":"PATCH","route":"/api/admin/users/:id","status":200}
+{"time":"2026-10-21T06:12:29.057Z","level":"warn","event":"http_request","requestId":"1b5b3432-2f99-4b5c-a1d4-125a557882d4","method":"GET","route":"unmatched","status":401}
+  ✔ System admin can lock accounts without bypassing project privacy (33.643445ms)
+{"time":"2026-10-21T06:12:29.417Z","level":"warn","event":"http_request","requestId":"7683451b-5e1a-4a94-8ed4-3ec1984e57a8","method":"POST","route":"/api/auth/password","status":400}
+{"time":"2026-10-21T06:12:30.087Z","level":"info","event":"http_request","requestId":"1e7ac65f-4cbb-4fff-89c2-51041fdf809a","method":"POST","route":"/api/auth/password","status":200}
+{"time":"2026-10-21T06:12:30.092Z","level":"warn","event":"http_request","requestId":"f6f8eb67-a0db-4258-ab72-4479d5111b97","method":"GET","route":"unmatched","status":401}
+{"time":"2026-10-21T06:12:30.105Z","level":"info","event":"http_request","requestId":"1f9d2bed-399c-41ee-ac8c-865c6d9121ca","method":"DELETE","route":"/api/tasks/:id","status":204}
+{"time":"2026-10-21T06:12:30.114Z","level":"warn","event":"http_request","requestId":"c0329b8d-20c9-4a27-a07f-ce633b350a30","method":"GET","route":"/api/tasks/:id","status":404}
+  ✔ Password change invalidates every session; delete task persists (1056.853735ms)
+✔ Authentication, project permissions, CRUD, Kanban, filters and persistence (7590.901796ms)
+✔ SQL migration, seed idempotence, database constraints and disk reopen (PGlite) (4553.508712ms)
+✔ Validation rejects invalid task fields and reversed dates (7.433295ms)
+✔ Password validation enforces bcrypt byte limit and CSRF compares safely (0.355056ms)
+{"time":"2026-10-21T06:12:36.244Z","level":"warn","event":"http_request","requestId":"795198fa-8606-446e-a4d5-2142e158f6e7","method":"POST","route":"/api/auth/login","status":401}
+{"time":"2026-10-21T06:12:36.251Z","level":"warn","event":"http_request","requestId":"25c252d4-a90d-4c4e-af94-e64094ae2b9d","method":"POST","route":"/api/auth/login","status":429}
+{"time":"2026-10-21T06:12:36.586Z","level":"error","event":"server_error","requestId":"b4b42c36-bdbb-49b4-b08e-81332b428884","code":"internal"}
+{"time":"2026-10-21T06:12:36.586Z","level":"error","event":"http_request","requestId":"b4b42c36-bdbb-49b4-b08e-81332b428884","method":"POST","route":"/api/auth/login","status":500}
+✔ Login rate limit and public errors do not disclose database internals (1203.62442ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14630.618339

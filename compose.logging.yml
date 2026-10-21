@@ -1,0 +1,49 @@
+services:
+  loki:
+    image: grafana/loki:3.5.1
+    user: '10001:10001'
+    command: ['-config.file=/etc/loki/loki.yml']
+    restart: unless-stopped
+    volumes: ['./logging/loki.yml:/etc/loki/loki.yml:ro',loki_data:/loki]
+    networks: [monitoring]
+    depends_on:
+      permissions: {condition: service_completed_successfully}
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    logging: {driver: json-file, options: {max-size: '5m', max-file: '3'}}
+  promtail:
+    image: grafana/promtail:3.5.1
+    user: '1000:1000'
+    group_add: ['101']
+    command: ['-config.file=/etc/promtail/promtail.yml']
+    restart: unless-stopped
+    volumes:
+      - ./logging/promtail.yml:/etc/promtail/promtail.yml:ro
+      - backend_logs:/logs/backend:ro
+      - nginx_logs:/logs/nginx:ro
+      - promtail_positions:/positions
+    networks: [monitoring]
+    depends_on:
+      permissions: {condition: service_completed_successfully}
+      loki: {condition: service_started}
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    logging: {driver: json-file, options: {max-size: '5m', max-file: '3'}}
+  nginx-logrotate:
+    image: node:24.19.0-bookworm-slim
+    user: '101:101'
+    command: [node,/rotate.mjs]
+    restart: unless-stopped
+    pid: service:nginx
+    network_mode: none
+    volumes: ['./logging/rotate.mjs:/rotate.mjs:ro',nginx_logs:/logs]
+    depends_on:
+      nginx: {condition: service_healthy}
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    logging: {driver: json-file, options: {max-size: '5m', max-file: '3'}}

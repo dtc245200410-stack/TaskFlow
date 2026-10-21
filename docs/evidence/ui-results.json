@@ -1,0 +1,13 @@
+{
+  "environment": "Chromium + Vite production build + Express/Prisma/PGlite over HTTP, not Docker Compose",
+  "results": [
+    "PASS login and live database dashboard",
+    "PASS real Kanban pointer drag persists after reload",
+    "PASS create/edit task, checklist and comment",
+    "PASS task search and list navigation",
+    "PASS task deletion",
+    "PASS mobile width 390, navigation and no horizontal overflow",
+    "PASS no browser pageerror"
+  ],
+  "errors": []
+}

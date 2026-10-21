@@ -1,0 +1,51 @@
+[
+  {
+    "command": [
+      "qa-bin/docker-compose",
+      "-f",
+      "DTC245200410/docker-compose.yml",
+      "config",
+      "--quiet"
+    ],
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "qa-bin/prometheus-3.5.0.linux-amd64/promtool",
+      "check",
+      "config",
+      "DTC245200410/monitoring/prometheus.yml"
+    ],
+    "exit_code": 0,
+    "output": "Checking DTC245200410/monitoring/prometheus.yml\n SUCCESS: DTC245200410/monitoring/prometheus.yml is valid prometheus config file syntax\n\n"
+  },
+  {
+    "command": [
+      "qa-bin/loki-linux-amd64",
+      "-config.file=DTC245200410/logging/loki.yml",
+      "-verify-config=true"
+    ],
+    "exit_code": 0,
+    "output": "level=info ts=2026-10-21T06:24:12.353462236Z caller=main.go:87 msg=\"config is valid\"\n"
+  },
+  {
+    "command": [
+      "qa-bin/promtail-linux-amd64",
+      "-config.file=DTC245200410/logging/promtail.yml",
+      "-check-syntax"
+    ],
+    "exit_code": 0,
+    "output": "Valid config file! No syntax issues found\n"
+  },
+  {
+    "command": [
+      "qa-bin/powershell/pwsh",
+      "-NoProfile",
+      "-File",
+      "qa-bin/parse-scripts.ps1"
+    ],
+    "exit_code": 0,
+    "output": "PASS acceptance.ps1\nPASS backup.ps1\nPASS common.ps1\nPASS generate-traffic.ps1\nPASS init.ps1\nPASS restore.ps1\nPASS start.ps1\nPASS stop.ps1\nPASS test.ps1\nPASS verify.ps1\n"
+  }
+]

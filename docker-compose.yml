@@ -65,7 +65,7 @@ services:
       ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:?Run scripts/init.ps1}
       DEMO_PASSWORD: ${DEMO_PASSWORD:?Run scripts/init.ps1}
       TZ: Asia/Ho_Chi_Minh
-    command: [sh,-ec,'npm run migrate && node dist/prisma/seed.js']
+    command: [sh,-ec,'npm run migrate && node dist/src/secure-schema.js && node dist/prisma/seed.js']
     networks: [data]
     depends_on:
       postgres: {condition: service_healthy}
@@ -149,6 +149,12 @@ services:
     extends: {file: ./compose.monitoring.yml, service: nginx-exporter}
   cadvisor:
     extends: {file: ./compose.monitoring.yml, service: cadvisor}
+  loki:
+    extends: {file: ./compose.logging.yml, service: loki}
+  promtail:
+    extends: {file: ./compose.logging.yml, service: promtail}
+  nginx-logrotate:
+    extends: {file: ./compose.logging.yml, service: nginx-logrotate}
 volumes:
   prometheus_data:
   grafana_data:
