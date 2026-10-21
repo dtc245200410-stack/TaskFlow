@@ -1,0 +1,156 @@
+name: ${COMPOSE_PROJECT_NAME:-taskflow_dtc245200410_new}
+x-logging: &logs
+  driver: json-file
+  options: {max-size: "5m", max-file: "3"}
+x-backend-env: &backend-env
+  DATABASE_URL: postgresql://taskflow_app:${APP_DB_PASSWORD:?Run scripts/init.ps1}@postgres:5432/${POSTGRES_DB:-taskflow}
+  APP_ORIGIN: https://localhost:${HTTPS_PORT:-8448}
+  COOKIE_SECURE: "true"
+  TZ: Asia/Ho_Chi_Minh
+services:
+  postgres:
+    image: postgres:17.11-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: taskflow_owner
+      POSTGRES_DB: ${POSTGRES_DB:-taskflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run scripts/init.ps1}
+      MIGRATE_DB_PASSWORD: ${MIGRATE_DB_PASSWORD:?Run scripts/init.ps1}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?Run scripts/init.ps1}
+      MONITOR_DB_PASSWORD: ${MONITOR_DB_PASSWORD:?Run scripts/init.ps1}
+      TZ: Asia/Ho_Chi_Minh
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/01-roles.sh:/docker-entrypoint-initdb.d/01-roles.sh:ro
+    networks: [data]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U taskflow_owner -d "$${POSTGRES_DB}"']
+      interval: 5s
+      timeout: 3s
+      retries: 25
+    security_opt: [no-new-privileges:true]
+    logging: *logs
+  permissions:
+    image: node:24.19.0-bookworm-slim
+    user: "0:0"
+    command: [sh, -ec, 'chown 1000:1000 /backend /positions; chown 101:101 /nginx; chown 10001:10001 /loki; chmod 750 /backend /positions /nginx /loki']
+    volumes: [backend_logs:/backend, nginx_logs:/nginx, promtail_positions:/positions, loki_data:/loki]
+    network_mode: none
+    cap_drop: [ALL]
+    cap_add: [CHOWN,FOWNER,DAC_OVERRIDE]
+    security_opt: [no-new-privileges:true]
+    logging: *logs
+  cert-init:
+    image: alpine/openssl:3.5.4
+    user: "0:0"
+    entrypoint: [sh, -ec]
+    command:
+      - |
+        if [ ! -s /certs/server.key ] || [ ! -s /certs/server.crt ]; then
+          openssl req -x509 -nodes -newkey rsa:3072 -days 365 -keyout /certs/server.key -out /certs/server.crt -subj '/CN=localhost' -addext 'subjectAltName=DNS:localhost,IP:127.0.0.1'
+          chown 101:101 /certs/server.key /certs/server.crt
+          chmod 600 /certs/server.key
+        fi
+    volumes: [tls_data:/certs]
+    network_mode: none
+    cap_drop: [ALL]
+    cap_add: [CHOWN,FOWNER,DAC_OVERRIDE]
+    security_opt: [no-new-privileges:true]
+    logging: *logs
+  migrate:
+    build: {context: ./backend, target: runtime}
+    environment:
+      DATABASE_URL: postgresql://taskflow_migrate:${MIGRATE_DB_PASSWORD:?Run scripts/init.ps1}@postgres:5432/${POSTGRES_DB:-taskflow}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@taskflow.local}
+      ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:?Run scripts/init.ps1}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:?Run scripts/init.ps1}
+      TZ: Asia/Ho_Chi_Minh
+    command: [sh,-ec,'npm run migrate && node dist/prisma/seed.js']
+    networks: [data]
+    depends_on:
+      postgres: {condition: service_healthy}
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    logging: *logs
+  backend:
+    build: {context: ./backend, target: runtime}
+    restart: unless-stopped
+    init: true
+    environment:
+      <<: *backend-env
+      LOG_DIR: /logs
+    volumes: [backend_logs:/logs]
+    networks: [proxy,data,monitoring]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      permissions: {condition: service_completed_successfully}
+    healthcheck:
+      test: [CMD,node,-e,"fetch('http://127.0.0.1:4000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    logging: *logs
+  nginx:
+    build: {context: ., dockerfile: nginx/Dockerfile}
+    restart: unless-stopped
+    environment:
+      HTTPS_PORT: ${HTTPS_PORT:-8448}
+      NGINX_ENVSUBST_FILTER: ^HTTPS_PORT$
+    ports: ['127.0.0.1:${HTTP_PORT:-8088}:8080','127.0.0.1:${HTTPS_PORT:-8448}:8443']
+    volumes: [tls_data:/certs:ro,nginx_logs:/logs]
+    networks: [proxy,monitoring]
+    depends_on:
+      backend: {condition: service_healthy}
+      cert-init: {condition: service_completed_successfully}
+    healthcheck:
+      test: [CMD-SHELL,'wget -q -O - http://127.0.0.1:8082/health | grep -q ok']
+      interval: 10s
+      timeout: 3s
+      retries: 15
+    read_only: true
+    tmpfs: ['/tmp:uid=101,gid=101','/etc/nginx/conf.d:uid=101,gid=101']
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    logging: *logs
+  pgadmin:
+    image: dpage/pgadmin4:9.8
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:?Run scripts/init.ps1}
+    ports: ['127.0.0.1:${PGADMIN_PORT:-5058}:80']
+    volumes: [pgadmin_data:/var/lib/pgadmin]
+    networks: [data,management]
+    depends_on:
+      postgres: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+    logging: *logs
+  tests:
+    profiles: [test]
+    build: {context: ./backend, target: test}
+    networks: [data]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+volumes:
+  prometheus_data:
+  grafana_data:
+  postgres_data:
+  pgadmin_data:
+  tls_data:
+  backend_logs:
+  nginx_logs:
+  loki_data:
+  promtail_positions:
+networks:
+  proxy:
+  data: {internal: true}
+  monitoring: {internal: true}
+  management:

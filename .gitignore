@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+**/node_modules/
+**/dist/
+**/.vite/
+**/test-results/
+**/playwright-report/
+backups/
+*.log
+*.key
+*.pem
+*.bundle
+*.zip
+qa-data/

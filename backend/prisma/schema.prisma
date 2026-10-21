@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType = "client"
+}
+datasource db {
+  provider = "postgresql"
+}
+enum SystemRole {
+  USER
+  ADMIN
+}
+enum ProjectRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+enum ProjectType {
+  PERSONAL
+  TEAM
+}
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  DONE
+}
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+model User {
+  id String @id @default(uuid()) @db.Uuid
+  email String @unique @db.VarChar(254)
+  name String @db.VarChar(80)
+  passwordHash String
+  role SystemRole @default(USER)
+  disabled Boolean @default(false)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  sessions Session[]
+  memberships ProjectMember[]
+  createdTasks Task[] @relation("Creator")
+  assignedTasks Task[] @relation("Assignee")
+  comments Comment[]
+  activities ActivityLog[]
+}
+model Session {
+  id String @id
+  userId String @db.Uuid
+  csrf String
+  expiresAt DateTime @db.Timestamptz(3)
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  @@index([expiresAt])
+  @@index([userId])
+}
+model Project {
+  id String @id @default(uuid()) @db.Uuid
+  name String @db.VarChar(100)
+  description String @default("") @db.VarChar(2000)
+  type ProjectType @default(TEAM)
+  archived Boolean @default(false)
+  demoKey String? @unique
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  members ProjectMember[]
+  tasks Task[]
+  labels Label[]
+  activities ActivityLog[]
+}
+model ProjectMember {
+  projectId String @db.Uuid
+  userId String @db.Uuid
+  role ProjectRole @default(MEMBER)
+  project Project @relation(fields:[projectId],references:[id],onDelete:Cascade)
+  user User @relation(fields:[userId],references:[id],onDelete:Restrict)
+  @@id([projectId,userId])
+  @@index([userId])
+}
+model Task {
+  id String @id @default(uuid()) @db.Uuid
+  number Int @unique @default(autoincrement())
+  projectId String @db.Uuid
+  title String @db.VarChar(160)
+  description String @default("") @db.VarChar(8000)
+  status TaskStatus @default(TODO)
+  priority Priority @default(MEDIUM)
+  creatorId String @db.Uuid
+  assigneeId String? @db.Uuid
+  startAt DateTime? @db.Timestamptz(3)
+  dueAt DateTime? @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  project Project @relation(fields:[projectId],references:[id],onDelete:Cascade)
+  creator User @relation("Creator",fields:[creatorId],references:[id],onDelete:Restrict)
+  assignee User? @relation("Assignee",fields:[assigneeId],references:[id],onDelete:SetNull)
+  labels TaskLabel[]
+  comments Comment[]
+  checklist ChecklistItem[]
+  activities ActivityLog[]
+  @@index([projectId,status,dueAt])
+  @@index([assigneeId,dueAt])
+  @@index([priority])
+}
+model Label {
+  id String @id @default(uuid()) @db.Uuid
+  projectId String @db.Uuid
+  name String @db.VarChar(40)
+  color String @default("#6366f1") @db.VarChar(7)
+  project Project @relation(fields:[projectId],references:[id],onDelete:Cascade)
+  tasks TaskLabel[]
+  @@unique([projectId,name])
+}
+model TaskLabel {
+  taskId String @db.Uuid
+  labelId String @db.Uuid
+  task Task @relation(fields:[taskId],references:[id],onDelete:Cascade)
+  label Label @relation(fields:[labelId],references:[id],onDelete:Cascade)
+  @@id([taskId,labelId])
+}
+model Comment {
+  id String @id @default(uuid()) @db.Uuid
+  taskId String @db.Uuid
+  userId String @db.Uuid
+  content String @db.VarChar(2000)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  task Task @relation(fields:[taskId],references:[id],onDelete:Cascade)
+  user User @relation(fields:[userId],references:[id],onDelete:Restrict)
+  @@index([taskId,createdAt])
+}
+model ChecklistItem {
+  id String @id @default(uuid()) @db.Uuid
+  taskId String @db.Uuid
+  title String @db.VarChar(200)
+  done Boolean @default(false)
+  task Task @relation(fields:[taskId],references:[id],onDelete:Cascade)
+  @@index([taskId])
+}
+model ActivityLog {
+  id String @id @default(uuid()) @db.Uuid
+  projectId String @db.Uuid
+  taskId String? @db.Uuid
+  userId String @db.Uuid
+  action String @db.VarChar(80)
+  detail String @default("") @db.VarChar(500)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  project Project @relation(fields:[projectId],references:[id],onDelete:Cascade)
+  task Task? @relation(fields:[taskId],references:[id],onDelete:SetNull)
+  user User @relation(fields:[userId],references:[id],onDelete:Restrict)
+  @@index([projectId,createdAt])
+}

@@ -1,0 +1,49 @@
+log_format taskflow escape=json '{"time":"$time_iso8601","service":"nginx","request_id":"$request_id","method":"$request_method","uri":"$uri","status":$status,"request_time":$request_time}';
+limit_req_zone $binary_remote_addr zone=api:10m rate=15r/s;
+limit_req_zone $binary_remote_addr zone=login:10m rate=20r/m;
+server {
+  listen 8080;
+  server_name localhost;
+  location = /health { access_log off; return 200 'ok'; }
+  location / { return 308 https://localhost:${HTTPS_PORT}$request_uri; }
+}
+server {
+  listen 8443 ssl;
+  server_name localhost;
+  ssl_certificate /certs/server.crt;
+  ssl_certificate_key /certs/server.key;
+  ssl_protocols TLSv1.2 TLSv1.3;
+  ssl_session_cache shared:TLS:10m;
+  server_tokens off;
+  client_max_body_size 64k;
+  access_log /logs/access.log taskflow;
+  error_log /logs/error.log warn;
+  add_header X-Content-Type-Options nosniff always;
+  add_header X-Frame-Options DENY always;
+  add_header Referrer-Policy same-origin always;
+  add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+  add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" always;
+  root /usr/share/nginx/html;
+  index index.html;
+  location = /metrics { return 404; }
+  location = /health { access_log off; proxy_pass http://backend:4000/health; }
+  location /api/ {
+    limit_req zone=api burst=40 nodelay;
+    proxy_pass http://backend:4000;
+    proxy_http_version 1.1;
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header X-Request-ID $request_id;
+    proxy_connect_timeout 5s;
+    proxy_read_timeout 30s;
+  }
+  location / { try_files $uri $uri/ /index.html; }
+}
+server {
+  listen 8082;
+  access_log off;
+  location /stub_status { stub_status; }
+  location = /health { return 200 'ok'; }
+  location / { return 404; }
+}
