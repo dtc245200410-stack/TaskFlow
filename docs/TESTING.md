@@ -48,3 +48,15 @@ Các ảnh ui-*.png là ảnh chụp thật của QAWorkHTTP/PGlite; không có 
 ## Chạy lại
 
 Windows: scripts/test.ps1 (PGlite), scripts/acceptance.ps1 (backend/DBthật), scripts/verify.ps1 (health/headers/targets); đọcDEMO.md đểkiểmtra thủcông. E2EWork: npmci ởcảfrontend/backend, frontendbuild, playwrightinstallchromium, node tests/e2e.mjs. Không đặtTEST_DATABASE_URL trỏ vàoDBcó dữliệu cần giữ.
+
+## Kiểm tra bổ sung Run All tự mở trang
+
+PowerShell 7.5.2 trên Linux: parser chấp nhận toàn bộ script PowerShell. Năm tình huống chạy script đạt PASS với server HTTP/HTTPS cục bộ thật, curl thật, lệnh Docker và thao tác mở trình duyệt được mô phỏng:
+
+1. Chờ một trang trả 503 hai lần trước khi sẵn sàng; chỉ gọi mở đủ bốn URL sau khi cả bốn health endpoint trả 2xx. Kiểm tra cổng tùy chỉnh, biến môi trường ưu tiên hơn `.env`, bỏ qua proxy cho localhost và giữ nguyên `.env`.
+2. NoBrowser vẫn khởi động và kiểm tra sẵn sàng nhưng không gọi mở trang.
+3. Prometheus luôn trả 503: script timeout, nêu đúng URL/dịch vụ và trả thất bại; không mở trang.
+4. Compose up thất bại: script dừng trước kiểm tra HTTP/mở trang và dẫn tới hướng dẫn lỗi migration.
+5. Lỗi liên kết trình duyệt ở một URL: in URL mở tay, tiếp tục gọi mở các trang còn lại.
+
+Các kiểm tra này không chứng minh Docker stack thật đang hoạt động hoặc trình duyệt Windows đã mở tab. Cần xác nhận Docker Desktop/Windows PowerShell 5.1 và trình duyệt mặc định trên máy cá nhân. Không chạy lại kiểm thử backend/UI vì logic ứng dụng không thay đổi trong commit này.

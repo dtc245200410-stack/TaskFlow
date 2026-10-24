@@ -7,6 +7,9 @@ CREATE ROLE taskflow_app LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD :'ap
 CREATE ROLE taskflow_monitor LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD :'monitor_pass';
 REVOKE ALL ON DATABASE :"db_name" FROM PUBLIC;
 GRANT CONNECT ON DATABASE :"db_name" TO taskflow_migrate,taskflow_app,taskflow_monitor;
+-- Prisma's CREATE SCHEMA requires CREATE on the database, including IF NOT EXISTS.
+-- Grant only to the deployment role; the application role keeps DML privileges.
+GRANT CREATE ON DATABASE :"db_name" TO taskflow_migrate;
 ALTER SCHEMA public OWNER TO taskflow_migrate;
 REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 GRANT USAGE ON SCHEMA public TO taskflow_app,taskflow_monitor;

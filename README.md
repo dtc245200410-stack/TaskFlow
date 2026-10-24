@@ -1,5 +1,7 @@
 # TaskFlow cho Đề 24
 
+Bộ ZIP đầy đủ: bắt đầu tại [BAT_DAU_TAI_DAY.md](BAT_DAU_TAI_DAY.md). Báo cáo và hướng dẫn Word nằm trong `TaiLieu/`; Chương 4 của báo cáo trình bày vận hành website, Docker, Prometheus và Grafana, đối chiếu nhật ký Windows và điều kiện nghiệm thu thực tế. Toàn bộ bản sửa Run All/OpenSSL/quyền migration đã được gộp trong mã nguồn.
+
 Dự án mới độc lập của sinh viên **Lã Quốc Trường – DTC245200410**. React/TypeScript + Express/Prisma + PostgreSQL, Nginx HTTPS, Prometheus/Grafana, Loki/Promtail. Chạy cục bộ bằng Docker Desktop; mọi cổng truy cập chỉ bind `127.0.0.1`. Không ghi đè hoặc sử dụng volume của dự án cũ.
 
 ## Chạy trên Windows bằng PowerShell
@@ -8,18 +10,18 @@ Docker Desktop phải đang chạy **Linux containers** với WSL2. Git/Node/Pyt
 
 ```powershell
 Set-Location D:\DoAn\DTC245200410
-docker version
-docker compose version
-powershell -ExecutionPolicy Bypass -File .\scripts\init.ps1
-docker compose config --quiet
-docker compose build
-docker compose up -d
-docker compose ps -a
+.\runall
 ```
+
+`runall.bat` nằm cùng cấp với `docker-compose.yml`. Trong Terminal PowerShell của VS Code dùng `.\runall` hoặc `.\runall.bat`; trong Command Prompt dùng `runall`. Không cần cài lệnh toàn cục hay chạy VS Code bằng quyền Administrator.
+
+Lệnh gọi `scripts/start.ps1`: kiểm tra Docker Engine, tự tạo `.env` nếu chưa có, kiểm tra cấu hình Compose, build và khởi động toàn bộ dịch vụ. Sau đó lệnh chờ TaskFlow, pgAdmin, Grafana và Prometheus sẵn sàng, in bảng địa chỉ và tự mở cả bốn trang bằng trình duyệt mặc định. Cổng được lấy từ `.env` hoặc biến môi trường đang có, khớp thứ tự ưu tiên của Compose. Khi có lỗi khởi động hoặc quá thời gian chờ, lệnh trả mã thoát khác 0 và chỉ rõ dịch vụ cần xem log. Docker Desktop cần được mở trước; lệnh không tự khởi động Docker Desktop.
+
+Mặc định chờ tối đa 180 giây sau bước Compose; các container khởi động theo phụ thuộc database/migration/backend. Có thể dùng `.\runall -WaitTimeoutSeconds 300` để chờ lâu hơn, hoặc `.\runall -NoBrowser` để chạy và kiểm tra dịch vụ mà không mở trình duyệt. Loki được truy vấn trong Grafana Explore, không có trang web quản trị riêng. Xem [hướng dẫn Run All](docs/RUNALL.md).
 
 `init.ps1` sinh tám mật khẩu độc lập 256 bit dạng hex và tạo `.env` UTF-8. Không in mật khẩu và không ghi đè `.env` đã có. Lần đầu cần Internet để tải image/npm; không cam kết thời gian tải. Chờ healthcheck trước khi mở web. `migrate`, `permissions`, `cert-init` kết thúc với `Exited (0)` là bình thường. Lệnh tắt an toàn: `docker compose down` — giữ dữ liệu volume. **Không dùng `down -v` trong quy trình thường ngày.**
 
-Lệnh gộp sau này:
+Những lần sau tiếp tục dùng `.\runall`; mã nguồn được build lại khi cần. Các lệnh PowerShell cũ vẫn dùng được. Lệnh tương đương:
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1
 ```
@@ -185,9 +187,9 @@ docker compose up -d nginx
 ```
 Không chạy `docker system prune -a --volumes` vì có thể ảnh hưởng dự án khác. Dùng `docker system df`, kiểm kích thước volume và backup trước dọn dẹp.
 
-## GitHub và ba commit thật
+## GitHub và lịch sử commit
 
-Dự án mới chưa push lên GitHub. Ba commit thật được giữ trong `repository.bundle`, không có `.git` trong ZIP. Khôi phục lịch sử sang thư mục mới:
+Dự án mới chưa push lên GitHub. Ba commit mốc triển khai và các commit bổ sung lệnh `runall`, sửa quyền migration/OpenSSL được giữ trong `repository.bundle`, không có `.git` trong ZIP. Khôi phục lịch sử sang thư mục mới:
 ```powershell
 git clone .\repository.bundle ..\DTC245200410-Git
 Set-Location ..\DTC245200410-Git
@@ -210,6 +212,7 @@ Kiểm `.env` bị ignore bằng `git check-ignore .env`; không in `.env` để
 | Cổng bị chiếm | Get-NetTCPConnection; đổi đúng biến port rồi up-d, không dừng dự án khác |
 | Container restart | `docker compose logs --tail=100 TEN_SERVICE`; đọc lỗi đầu tiên, không chỉ restart liên tục |
 | Migration lỗi | logs migrate/postgres; giữ nguyên volume/secret; kiểm role và migrationfile |
+| Migration đầu tiên lỗi P3018 / 42501 rồi P3009 | Xem [hướng dẫn sửa migration](docs/FIX_MIGRATION.md): cấp CREATE chỉ cho role triển khai, build image đã có OpenSSL, resolve rolled-back đúng migration rồi chạy runall |
 | Nginx502/504 | logs backend/nginx, backendhealth; sau recreate backend có thể cần restartnginx để refreshDNS |
 | pgAdmin không kết nối | Host phải là postgres, port5432, owner/taskflow DB/password đúng .env lần init |
 | Origin/CSRF403 | Dùng https://localhost:HTTPS_PORT, tải lại/đăng nhập lại; không tắt bảo vệ để sửa lỗi |

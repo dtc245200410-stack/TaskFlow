@@ -1,0 +1,92 @@
+PS D:\DoAn\DTC245200410> .\runall
+[+] Building 2.3s (37/37) FINISHED                                                                                              
+ => [internal] load local bake definitions                                                                                 0.0s
+ => => reading from stdin 1.53kB                                                                                           0.0s
+ => [nginx internal] load build definition from Dockerfile                                                                 0.0s
+ => => transferring dockerfile: 379B                                                                                       0.0s
+ => [migrate internal] load build definition from Dockerfile                                                               0.0s
+ => => transferring dockerfile: 620B                                                                                       0.0s
+ => [backend internal] load metadata for docker.io/library/node:24.19.0-bookworm-slim                                      0.0s
+ => [nginx internal] load metadata for docker.io/nginxinc/nginx-unprivileged:1.28.0-alpine                                 1.8s
+ => [migrate internal] load .dockerignore                                                                                  0.0s
+ => => transferring context: 69B                                                                                           0.0s
+ => [migrate internal] load build context                                                                                  0.0s
+ => => transferring context: 688B                                                                                          0.0s
+ => [nginx frontend 1/6] FROM docker.io/library/node:24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733c  0.1s
+ => => resolve docker.io/library/node:24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7  0.0s
+ => CACHED [backend build 2/8] WORKDIR /app                                                                                0.0s
+ => CACHED [backend build 3/8] COPY package*.json ./                                                                       0.0s
+ => CACHED [backend build 4/8] RUN npm ci                                                                                  0.0s
+ => CACHED [backend build 5/8] COPY prisma ./prisma                                                                        0.0s
+ => CACHED [backend build 6/8] COPY prisma.config.ts tsconfig.json ./                                                      0.0s
+ => CACHED [backend build 7/8] COPY src ./src                                                                              0.0s
+ => CACHED [backend build 8/8] RUN npm run build                                                                           0.0s
+ => CACHED [backend runtime 3/7] COPY --from=build /app/node_modules ./node_modules                                        0.0s
+ => CACHED [backend runtime 4/7] COPY --from=build /app/dist ./dist                                                        0.0s
+ => CACHED [backend runtime 5/7] COPY --from=build /app/prisma ./prisma                                                    0.0s
+ => CACHED [backend runtime 6/7] COPY --from=build /app/prisma.config.ts ./                                                0.0s
+ => CACHED [backend runtime 7/7] COPY package*.json ./                                                                     0.0s
+ => [backend] exporting to image                                                                                           0.1s
+ => => exporting layers                                                                                                    0.0s
+ => => exporting manifest sha256:a68d9c8adebbe904016e4e113487222ada051d2ba77799bba308a826e5613095                          0.0s
+ => => exporting config sha256:14094a43650343a52b961647f2d7a1ce9b39a71d27644c86efd751ca4920e95b                            0.0s
+ => => exporting attestation manifest sha256:637f099e14b1bc136676866eb52b2cef46ca98d61f8aa655b021df5c3d7a71c1              0.0s
+ => => exporting manifest list sha256:af83bc4fb5d4c159c99de7bbf849349dc488cf2f77bf603cde4dfd4ce52f9d2e                     0.0s
+ => => naming to docker.io/library/taskflow_dtc245200410_new-backend:latest                                                0.0s
+ => => unpacking to docker.io/library/taskflow_dtc245200410_new-backend:latest                                             0.0s
+ => [migrate] exporting to image                                                                                           0.2s
+ => => exporting layers                                                                                                    0.0s
+ => => exporting manifest sha256:8e752763abdbcb0a3ea19ee31dab5fd820ca86af3bd0a77114e342c1b5cbfda2                          0.0s
+ => => exporting config sha256:9855ee84fbe0e3df77a5e79c31c93798e4b47878dd30d08fa644721af39a6c16                            0.0s
+ => => exporting attestation manifest sha256:de0851602ec3637abe51d3eb78afdd7db5def6c4bc7feee66dbb46c60e4a4972              0.0s
+ => => exporting manifest list sha256:cecd98683a8697e8008d7e5f54454b2c7d968fc6944d2ee2249d519ced1720be                     0.0s
+ => => naming to docker.io/library/taskflow_dtc245200410_new-migrate:latest                                                0.0s
+ => => unpacking to docker.io/library/taskflow_dtc245200410_new-migrate:latest                                             0.0s
+ => [backend] resolving provenance for metadata file                                                                       0.0s
+ => [migrate] resolving provenance for metadata file                                                                       0.0s
+ => [auth] nginxinc/nginx-unprivileged:pull token for registry-1.docker.io                                                 0.0s
+ => [nginx internal] load .dockerignore                                                                                    0.0s
+ => => transferring context: 117B                                                                                          0.0s
+ => [nginx internal] load build context                                                                                    0.0s
+ => => transferring context: 555B                                                                                          0.0s
+ => [nginx stage-1 1/3] FROM docker.io/nginxinc/nginx-unprivileged:1.28.0-alpine@sha256:c97ff0bf7cbae369953c6da1232ec14ad  0.0s
+ => => resolve docker.io/nginxinc/nginx-unprivileged:1.28.0-alpine@sha256:c97ff0bf7cbae369953c6da1232ec14ad9f971d66360c56  0.0s
+ => CACHED [nginx frontend 2/6] WORKDIR /web                                                                               0.0s
+ => CACHED [nginx frontend 3/6] COPY frontend/package*.json ./                                                             0.0s
+ => CACHED [nginx frontend 4/6] RUN npm ci                                                                                 0.0s
+ => CACHED [nginx frontend 5/6] COPY frontend ./                                                                           0.0s
+ => CACHED [nginx frontend 6/6] RUN npm run build                                                                          0.0s
+ => CACHED [nginx stage-1 2/3] COPY --from=frontend /web/dist /usr/share/nginx/html                                        0.0s
+ => CACHED [nginx stage-1 3/3] COPY nginx/default.conf.template /etc/nginx/templates/default.conf.template                 0.0s
+ => [nginx] exporting to image                                                                                             0.1s
+ => => exporting layers                                                                                                    0.0s
+ => => exporting manifest sha256:f79e775692958b066745fa2531390e60febe135ccdcaa401e67a45aea9b58ab7                          0.0s
+ => => exporting config sha256:5648e0c636b5e843a891edf4eba2a8271a90c44e9fda85a7b62790178fef348d                            0.0s
+ => => exporting attestation manifest sha256:30394aea0f62badbafe7c13a742470498e3f30d4b4f88a4047097b4ab2b2a28f              0.0s
+ => => exporting manifest list sha256:2db0fb1d85ab97230592e8cb7c82193aefe206f024d74c99eac898718b9999ce                     0.0s
+ => => naming to docker.io/library/taskflow_dtc245200410_new-nginx:latest                                                  0.0s
+ => => unpacking to docker.io/library/taskflow_dtc245200410_new-nginx:latest                                               0.0s
+ => [nginx] resolving provenance for metadata file                                                                         0.0s
+[+] up 14/14
+ ✔ Image taskflow_dtc245200410_new-nginx                   Built                                                            2.5s
+ ✔ Image taskflow_dtc245200410_new-backend                 Built                                                            2.5s
+ ✔ Image taskflow_dtc245200410_new-migrate                 Built                                                            2.5s
+ ✔ Container taskflow_dtc245200410_new-pgadmin-1           Running                                                          0.0s
+ ✔ Container taskflow_dtc245200410_new-postgres-1          Healthy                                                          0.6s
+ ✔ Container taskflow_dtc245200410_new-cadvisor-1          Running                                                          0.0s
+ ✔ Container taskflow_dtc245200410_new-loki-1              Running                                                          0.0s
+ ✔ Container taskflow_dtc245200410_new-postgres-exporter-1 Running                                                          0.0s
+ ✔ Container taskflow_dtc245200410_new-prometheus-1        Running                                                          0.0s
+ ✔ Container taskflow_dtc245200410_new-promtail-1          Running                                                          0.0s
+ ✔ Container taskflow_dtc245200410_new-grafana-1           Running                                                          0.0s
+ ... 3 more                                                                                                                     
+service "migrate" didn't complete successfully: exit 1
+
+What's next:
+    Debug this Compose error with Gordon → docker ai "help me fix this compose error"
+Startup failed. Inspect docker compose logs --tail=100.
+At D:\DoAn\DTC245200410\scripts\start.ps1:7 char:28
++ ... DE -ne 0) { throw 'Startup failed. Inspect docker compose logs --tail ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Startup failed....ogs --tail=100.:String) [], RuntimeException
+    + FullyQualifiedErrorId : Startup failed. Inspect docker compose logs --tail=100.

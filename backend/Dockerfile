@@ -1,4 +1,8 @@
-FROM node:24.19.0-bookworm-slim AS build
+FROM node:24.19.0-bookworm-slim AS base
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends openssl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+FROM base AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
@@ -6,7 +10,7 @@ COPY prisma ./prisma
 COPY prisma.config.ts tsconfig.json ./
 COPY src ./src
 RUN npm run build
-FROM node:24.19.0-bookworm-slim AS runtime
+FROM base AS runtime
 ENV NODE_ENV=production PORT=4000
 WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules

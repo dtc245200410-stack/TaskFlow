@@ -1,0 +1,21 @@
+TRICH LOG DO NGUOI DUNG CUNG CAP NGAY 21/10/2026
+Nguon: docker compose logs --no-color --tail=200 migrate
+Day la trich log, khong phai ket qua chay lai sau ban sua.
+
+> taskflow-backend@1.0.0 migrate
+> prisma migrate deploy
+Loaded Prisma config from prisma.config.ts.
+prisma:warn Prisma failed to detect the libssl/openssl version to use, and may not work as expected. Defaulting to "openssl-1.1.x".
+Prisma schema loaded from prisma/schema.prisma.
+Datasource "db": PostgreSQL database "taskflow", schema "public" at "postgres:5432"
+1 migration found in prisma/migrations
+Applying migration `202610210001_initial`
+Error: P3018
+Migration name: 202610210001_initial
+Database error code: 42501
+ERROR: permission denied for database taskflow
+
+Lan chay tiep theo:
+Error: P3009
+migrate found failed migrations in the target database, new migrations will not be applied.
+The `202610210001_initial` migration started at 2026-10-21 07:05:54.538572 UTC failed

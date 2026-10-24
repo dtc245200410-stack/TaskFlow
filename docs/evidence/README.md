@@ -1,5 +1,7 @@
 # Minh chứng và ảnh cần bổ sung
 
+Nhật ký Windows ngày 21/10/2026 được bổ sung tại `windows-20261021-build.txt` và `windows-20261021-migrate-excerpt.txt`: build image hoàn tất, PostgreSQL Healthy, một số container Running nhưng migration lỗi P3018/42501 rồi P3009. Đây là bằng chứng của lần chạy đó, không phải xác nhận stack đã hoạt động đầy đủ sau bản sửa. Chương 4 trong báo cáo Word phân tích nhật ký và hướng dẫn nghiệm thu. Xem `windows-local/README.md` để chụp ảnh kết quả trên máy cá nhân.
+
 Ảnh ui-login/dashboard/kanban/detail/list/calendar/projects/mobile.png do Chromium chụp từ bản QA chạy thật trong Work. Môi trường: productionfrontend, Express/Prisma/PGlite quaHTTP; không phải DockerDesktop/PostgreSQL17/NginxTLS. ui-results.json và api-test.txt là kết quả chạy thật; config-validation.json là kiểmtra cấu hình, image-tags.json là kiểmtra manifest.
 
 Sau khi chạy trên máy cá nhân, chụp các ảnh dưới đây để thay/điền phần triển khai trong báo cáo. Không để .env, password, cookie, csrf, token hoặc dữ liệu nhạy cảm xuất hiện.
